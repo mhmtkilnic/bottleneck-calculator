@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DailyTechHub Bottleneck Calculator</title>
+    <meta
+      name="description"
+      content="DailyTechHub Bottleneck Calculator helps you estimate bottleneck percentage between your CPU and GPU combination."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem("dt-theme") || "dark";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="dt-root">
+      <header class="dt-header">
+        <div class="dt-logo">
+          <span class="dt-logo-mark">DT</span>
+          <div class="dt-logo-text">
+            <span class="dt-logo-title">DailyTechHub</span>
+            <span class="dt-logo-subtitle" id="subtitle-main">Bottleneck Calculator</span>
+          </div>
+        </div>
+        <div class="dt-header-right">
+          <nav class="dt-nav">
+            <a href="#calculator" id="nav-calculator">Calculator</a>
+            <a href="#benchmarks" id="nav-benchmarks">Game Benchmarks</a>
+            <a href="#contact" id="nav-contact">Contact</a>
+          </nav>
+          <div class="dt-header-actions">
+            <button id="theme-toggle" class="dt-button-ghost dt-button-sm">
+              <span id="theme-toggle-icon">🌙</span>
+            </button>
+            <select id="lang-select" class="dt-select">
+              <option value="en">EN</option>
+              <option value="tr">TR</option>
+            </select>
+          </div>
+          <span class="dt-pill" id="theme-status">Dark Mode • Tech UI</span>
+        </div>
+      </header>
+
+      <main class="dt-main">
+        <section id="calculator" class="dt-card dt-card-main">
+          <div class="dt-card-header">
+            <h1 id="title-main">Bottleneck Calculator</h1>
+            <p id="subtitle-description">
+              See how balanced your CPU and GPU combination is for gaming workloads.
+            </p>
+            <div class="dt-mode-switcher">
+              <button id="mode-single" class="active">Single Mode</button>
+              <button id="mode-versus">Versus Mode</button>
+            </div>
+          </div>
+
+          <form class="dt-form" id="bottleneck-form">
+            <div id="systems-container" class="dt-systems-layout">
+              <!-- System A (Standard or Left in Versus) -->
+              <div class="dt-system-box" id="system-a">
+                <h3 class="dt-system-title" id="title-system-a" style="display: none;">System A (Current)</h3>
+                <div class="dt-form-group">
+                  <label id="label-cpu">Processor (CPU)</label>
+                  <div class="dt-group-stack">
+                    <select id="cpu-brand-select" class="dt-select">
+                      <option value="" id="cpu-brand-placeholder">Select brand (Intel / AMD)</option>
+                    </select>
+                    <select id="cpu-family-select" class="dt-select" disabled>
+                      <option value="" id="cpu-family-placeholder">Select family (i5 / Ryzen 5 etc.)</option>
+                    </select>
+                    <select id="cpu-model-select" class="dt-select" disabled>
+                      <option value="" id="cpu-model-placeholder">Select model</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="dt-form-group">
+                  <label id="label-gpu">Graphics Card (GPU)</label>
+                  <div class="dt-group-stack">
+                    <select id="gpu-brand-select" class="dt-select">
+                      <option value="" id="gpu-brand-placeholder">Select brand (NVIDIA / AMD)</option>
+                    </select>
+                    <select id="gpu-family-select" class="dt-select" disabled>
+                      <option value="" id="gpu-family-placeholder">Select series (GTX / RTX / RX etc.)</option>
+                    </select>
+                    <select id="gpu-model-select" class="dt-select" disabled>
+                      <option value="" id="gpu-model-placeholder">Select model</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- System B (Right in Versus) -->
+              <div class="dt-system-box" id="system-b" style="display: none;">
+                <h3 class="dt-system-title" id="title-system-b">System B (Target)</h3>
+                <div class="dt-form-group">
+                  <label id="label-cpu-b">Processor (CPU)</label>
+                  <div class="dt-group-stack">
+                    <select id="cpu-brand-select-b" class="dt-select">
+                      <option value="" id="cpu-brand-placeholder-b">Select brand (Intel / AMD)</option>
+                    </select>
+                    <select id="cpu-family-select-b" class="dt-select" disabled>
+                      <option value="" id="cpu-family-placeholder-b">Select family (i5 / Ryzen 5 etc.)</option>
+                    </select>
+                    <select id="cpu-model-select-b" class="dt-select" disabled>
+                      <option value="" id="cpu-model-placeholder-b">Select model</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="dt-form-group">
+                  <label id="label-gpu-b">Graphics Card (GPU)</label>
+                  <div class="dt-group-stack">
+                    <select id="gpu-brand-select-b" class="dt-select">
+                      <option value="" id="gpu-brand-placeholder-b">Select brand (NVIDIA / AMD)</option>
+                    </select>
+                    <select id="gpu-family-select-b" class="dt-select" disabled>
+                      <option value="" id="gpu-family-placeholder-b">Select series (GTX / RTX / RX etc.)</option>
+                    </select>
+                    <select id="gpu-model-select-b" class="dt-select" disabled>
+                      <option value="" id="gpu-model-placeholder-b">Select model</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dt-form-group dt-form-inline">
+              <div>
+                <label for="resolution-select" id="label-resolution">Target Resolution</label>
+                <select id="resolution-select" class="dt-select">
+                  <option value="720">720p (HD)</option>
+                  <option value="1080" selected>1080p (Full HD)</option>
+                  <option value="1440">1440p (2K / QHD)</option>
+                  <option value="2160">2160p (4K / Ultra HD)</option>
+                </select>
+              </div>
+              <div>
+                <label for="refresh-select" id="label-refresh">Target Refresh Rate</label>
+                <select id="refresh-select" class="dt-select">
+                  <option value="60">60 Hz</option>
+                  <option value="75">75 Hz</option>
+                  <option value="120">120 Hz</option>
+                  <option value="144" selected>144 Hz</option>
+                  <option value="165">165 Hz</option>
+                  <option value="240">240 Hz</option>
+                  <option value="280">280 Hz</option>
+                  <option value="360">360 Hz</option>
+                  <option value="480">480 Hz</option>
+                  <option value="540">540 Hz</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="dt-actions">
+              <button type="submit" class="dt-button-primary" id="btn-calc">
+                Calculate Bottleneck
+              </button>
+              <button
+                type="button"
+                class="dt-button-ghost"
+                id="auto-test-button"
+              >
+                Auto Test (Beta)
+              </button>
+              <button
+                type="button"
+                class="dt-button-ghost"
+                id="btn-reset"
+              >
+                Reset
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="dt-layout-results">
+          <article class="dt-card dt-card-result">
+            <div class="dt-result-header">
+              <h2 id="result-title">Result</h2>
+              <span class="dt-result-tag" id="result-tag">Ready</span>
+            </div>
+
+            <div id="results-container" class="dt-results-layout">
+              <!-- Single/System A Result -->
+              <div class="dt-result-box" id="result-box-a">
+                <h4 class="dt-system-label" id="label-system-a" style="display: none;">System A</h4>
+                <div class="dt-result-main">
+                  <div class="dt-result-percentage">
+                    <div class="dt-result-value" id="result-percentage">—%</div>
+                    <div class="dt-result-label" id="result-label">
+                      Select a combination
+                    </div>
+                  </div>
+
+                  <div class="dt-meter-wrapper">
+                    <div class="dt-meter-bar">
+                      <div class="dt-meter-fill" id="meter-fill"></div>
+                    </div>
+                    <div class="dt-legend">
+                      <span class="low" id="legend-low">Balanced</span>
+                      <span class="mid" id="legend-mid">Mild bottleneck</span>
+                      <span class="high" id="legend-high">Noticeable bottleneck</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dt-result-details">
+                  <div class="dt-detail-row">
+                    <span class="dt-detail-label" id="detail-bottleneck-label">Limiting Component</span>
+                    <span class="dt-detail-value" id="bottleneck-side">—</span>
+                  </div>
+                  <div class="dt-detail-row">
+                    <span class="dt-detail-label" id="detail-fps-label">Estimated FPS Impact</span>
+                    <span class="dt-detail-value" id="fps-impact">—</span>
+                  </div>
+                  <div class="dt-detail-item full-width">
+                    <span class="dt-detail-label" id="detail-advice-label">Recommendation</span>
+                    <span class="dt-detail-value" id="advice">Select a combination.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Versus Divider -->
+              <div id="versus-divider" class="dt-versus-divider" style="display: none;">
+                <span>VS</span>
+              </div>
+
+              <!-- System B Result -->
+              <div class="dt-result-box" id="result-box-b" style="display: none;">
+                <h4 class="dt-system-label" id="label-system-b">System B</h4>
+                <div class="dt-result-main">
+                  <div class="dt-result-percentage">
+                    <div class="dt-result-value" id="result-percentage-b">—%</div>
+                    <div class="dt-result-label" id="result-label-b">
+                      Select a combination
+                    </div>
+                  </div>
+
+                  <div class="dt-meter-wrapper">
+                    <div class="dt-meter-bar">
+                      <div class="dt-meter-fill" id="meter-fill-b"></div>
+                    </div>
+                    <div class="dt-legend">
+                      <span class="low" id="legend-low-b">Balanced</span>
+                      <span class="mid" id="legend-mid-b">Mild bottleneck</span>
+                      <span class="high" id="legend-high-b">Noticeable bottleneck</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dt-result-details">
+                  <div class="dt-detail-row">
+                    <span class="dt-detail-label" id="detail-bottleneck-label-b">Limiting Component</span>
+                    <span class="dt-detail-value" id="bottleneck-side-b">—</span>
+                  </div>
+                  <div class="dt-detail-row">
+                    <span class="dt-detail-label" id="detail-fps-label-b">Estimated FPS Impact</span>
+                    <span class="dt-detail-value" id="fps-impact-b">—</span>
+                  </div>
+                  <div class="dt-detail-item full-width">
+                    <span class="dt-detail-label" id="detail-advice-label-b">Recommendation</span>
+                    <span class="dt-detail-value" id="advice-b">Select a combination.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Versus Summary -->
+            <div id="versus-summary" class="dt-versus-summary" style="display: none;">
+              <div class="dt-summary-card">
+                <span id="vs-summary-text">System B is 25% more balanced than System A.</span>
+              </div>
+            </div>
+
+            <!-- Resolution Comparison Chart -->
+            <div id="res-comparison-container" class="dt-res-comparison" style="display: none;">
+              <h3 id="res-comp-title">Bottleneck by Resolution</h3>
+              <div class="dt-res-chart">
+                <div class="dt-res-bar-wrapper">
+                  <span class="label">1080p</span>
+                  <div class="dt-res-bar-bg">
+                    <div id="res-bar-1080" class="dt-res-bar-fill"></div>
+                  </div>
+                  <span id="res-val-1080" class="value">0%</span>
+                </div>
+                <div class="dt-res-bar-wrapper">
+                  <span class="label">1440p (2K)</span>
+                  <div class="dt-res-bar-bg">
+                    <div id="res-bar-1440" class="dt-res-bar-fill"></div>
+                  </div>
+                  <span id="res-val-1440" class="value">0%</span>
+                </div>
+                <div class="dt-res-bar-wrapper">
+                  <span class="label">2160p (4K)</span>
+                  <div class="dt-res-bar-bg">
+                    <div id="res-bar-2160" class="dt-res-bar-fill"></div>
+                  </div>
+                  <span id="res-val-2160" class="value">0%</span>
+                </div>
+              </div>
+              <p id="res-comp-note" class="dt-note">Higher resolutions typically reduce CPU bottleneck by shifting load to the GPU.</p>
+            </div>
+
+            <!-- Hardware Recommendations -->
+            <div id="recommendation-container" class="dt-recommendation-section" style="display: none;">
+              <h3 id="rec-title">Recommended Upgrades</h3>
+              <div id="rec-list" class="dt-rec-grid"></div>
+            </div>
+
+            <div class="dt-result-actions">
+              <button id="btn-share" class="dt-button-secondary dt-button-sm">
+                Share on X
+              </button>
+              <button id="btn-copy" class="dt-button-ghost dt-button-sm">
+                Copy Results
+              </button>
+            </div>
+          </article>
+
+          <aside class="dt-card dt-card-side">
+            <h3 id="how-title">How Is System Balance Calculated?</h3>
+            <p id="how-text">
+              DailyTechHub models rely on relative performance scores derived from synthetic tests,
+              game benchmarks and real-world usage data.
+            </p>
+            <ul class="dt-list">
+              <li>
+                <span>A <strong>performance score</strong> is assigned to both CPU and GPU.</span>
+              </li>
+              <li>
+                <span>Your resolution and refresh rate target <strong>dynamically scale</strong> these scores.</span>
+              </li>
+              <li>
+                <span>
+                  The gap between the weaker and stronger component is used to compute
+                  the <strong>bottleneck percentage</strong>.
+                </span>
+              </li>
+            </ul>
+            <p class="dt-note" id="how-note">
+              Results are designed to be <strong>close to real-world behavior</strong> but are not 100% accurate.
+              Actual performance depends on games, drivers, cooling and background tasks.
+            </p>
+          </aside>
+        </section>
+
+        <section class="dt-card dt-card-benchmarks" id="benchmarks">
+          <div class="dt-bench-header">
+            <h2 id="bench-title">Game Benchmark Estimate</h2>
+            <p id="bench-text">
+              See approximate FPS in popular games based on your selected combination.
+            </p>
+          </div>
+          <div class="dt-bench-body">
+            <table class="dt-bench-table">
+              <thead>
+                <tr>
+                  <th id="bench-col-game">Game</th>
+                  <th id="bench-col-settings">Suggested Settings</th>
+                  <th id="bench-col-fps">Estimated FPS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="bench-cs-name">CS2 (competitive FPS)</td>
+                  <td id="bench-cs-settings">Run a calculation</td>
+                  <td id="bench-cs-fps">—</td>
+                </tr>
+                <tr>
+                  <td id="bench-val-name">Valorant</td>
+                  <td id="bench-val-settings">Run a calculation</td>
+                  <td id="bench-val-fps">—</td>
+                </tr>
+                <tr>
+                  <td id="bench-fort-name">Fortnite (Performance)</td>
+                  <td id="bench-fort-settings">Run a calculation</td>
+                  <td id="bench-fort-fps">—</td>
+                </tr>
+                <tr>
+                  <td id="bench-gta-name">GTA V</td>
+                  <td id="bench-gta-settings">Run a calculation</td>
+                  <td id="bench-gta-fps">—</td>
+                </tr>
+                <tr>
+                  <td id="bench-cp-name">Cyberpunk 2077</td>
+                  <td id="bench-cp-settings">Run a calculation</td>
+                  <td id="bench-cp-fps">—</td>
+                </tr>
+                <tr>
+                  <td id="bench-rdr2-name">Red Dead Redemption 2</td>
+                  <td id="bench-rdr2-settings">Run a calculation</td>
+                  <td id="bench-rdr2-fps">—</td>
+                </tr>
+                <tr>
+                  <td id="bench-spider-name">Spider-Man Remastered</td>
+                  <td id="bench-spider-settings">Run a calculation</td>
+                  <td id="bench-spider-fps">—</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="dt-note" id="bench-note">
+              Values are approximated using GPU score and resolution; real FPS will vary with in‑game settings,
+              drivers and CPU performance.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <section class="dt-card dt-card-contact" id="contact">
+        <div class="dt-contact-main">
+          <div>
+            <h2 id="contact-title">DailyTechHub Contact</h2>
+            <p id="contact-text">
+              If you have questions about bottleneck analysis, PC builds or hardware suggestions, feel free to reach out.
+            </p>
+            <ul class="dt-list">
+              <li>
+                <span><strong>Email:</strong> dailytechubinfo@gmail.com</span>
+              </li>
+              <li>
+                <span><strong>Twitter / X:</strong> @DailyTechHub</span>
+              </li>
+              <li>
+                <span><strong>Partnerships:</strong> dailytechubinfo@gmail.com</span>
+              </li>
+            </ul>
+          </div>
+          <div class="dt-contact-cta">
+            <p id="contact-note">
+              This is a demo contact area; a single click will open your default email client.
+            </p>
+            <a
+              class="dt-button-secondary"
+              href="mailto:dailytechubinfo@gmail.com?subject=DailyTechHub%20Bottleneck%20Calculator"
+            >
+              Send Email
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="dt-footer">
+        <span id="footer-left">© <span id="year"></span> DailyTechHub • Technical Analysis &amp; Guides</span>
+        <span class="dt-footer-right">Dark Mode • Responsive • Tech UI</span>
+      </footer>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+

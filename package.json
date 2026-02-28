@@ -1,0 +1,19 @@
+{
+  "name": "dailytechhub-bottleneck-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DailyTechHub markası için modern, dark mode bir Darboğaz (Bottleneck) Hesaplayıcı tek sayfa web arayüzü.",
+  "scripts": {
+    "start": "npx serve .",
+    "preview": "npx serve ."
+  },
+  "keywords": [
+    "dailytechhub",
+    "bottleneck",
+    "darbogaz",
+    "calculator",
+    "web"
+  ],
+  "license": "MIT"
+}
+
